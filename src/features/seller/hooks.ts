@@ -24,6 +24,7 @@ import {
 import { activeStoreStore, useActiveStoreStore } from "@/store/active-store-store";
 import type { ApiError } from "@/types/api";
 import type { CreatePosSalePayload } from "@/types/order";
+import type { Store } from "@/types/store";
 
 function errorMessage(error: unknown, fallback: string): string {
   const apiError = error as ApiError | undefined;
