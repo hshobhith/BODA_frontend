@@ -7,7 +7,7 @@ export const APP_DESCRIPTION =
   "BODA is your local marketplace — discover nearby stores, shop trusted sellers, and get everyday essentials delivered fast.";
 
 export const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api/v1";
+  process.env.NEXT_PUBLIC_API_URL ?? "https://boda-frontend-xi.vercel.app/api/v1";
 
 /** Public support inbox — also where the backend sends contact-form messages
  * (its `SUPPORT_EMAIL` env var), so keep the two in sync. */
