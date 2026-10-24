@@ -1,0 +1,36 @@
+{
+  "name": "BODA — Local Marketplace",
+  "short_name": "BODA",
+  "description": "BODA is your local marketplace — discover nearby stores, shop trusted sellers, and get everyday essentials delivered fast.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#2058c5",
+  "categories": [
+    "shopping",
+    "food",
+    "lifestyle"
+  ],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
