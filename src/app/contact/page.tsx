@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CircleHelp, Mail, PackageSearch, RotateCcw } from "lucide-react";
+import { AtSign, CircleHelp, Mail, PackageSearch, Phone, RotateCcw } from "lucide-react";
 
-import { APP_NAME, SUPPORT_EMAIL } from "@/constants/config";
+import {
+  APP_NAME,
+  INSTAGRAM_URL,
+  SUPPORT_EMAIL,
+  SUPPORT_EMAIL_ALT,
+  SUPPORT_PHONE,
+  SUPPORT_PHONE_LABEL,
+} from "@/constants/config";
 import { ROUTES } from "@/constants/routes";
 import { ContactForm } from "@/features/contact/components/contact-form";
 
@@ -68,16 +75,36 @@ export default function ContactPage() {
           ))}
 
           <div className="flex flex-col gap-2 rounded-xl border bg-muted/30 p-4">
-            <h2 className="text-sm font-semibold text-foreground">Prefer email?</h2>
+            <h2 className="text-sm font-semibold text-foreground">Reach us directly</h2>
             <p className="text-xs text-muted-foreground">
-              Write to us directly. Include your order number if it&apos;s about a specific order.
+              Email, call, or message us on Instagram. Include your order number if it&apos;s
+              about a specific order.
             </p>
+            {[SUPPORT_EMAIL, SUPPORT_EMAIL_ALT].map((email) => (
+              <a
+                key={email}
+                href={`mailto:${email}`}
+                className="flex items-center gap-1.5 text-sm font-medium break-all text-primary hover:underline"
+              >
+                <Mail className="size-4 shrink-0" />
+                {email}
+              </a>
+            ))}
             <a
-              href={`mailto:${SUPPORT_EMAIL}`}
+              href={`tel:${SUPPORT_PHONE}`}
               className="flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
             >
-              <Mail className="size-4" />
-              {SUPPORT_EMAIL}
+              <Phone className="size-4 shrink-0" />
+              {SUPPORT_PHONE_LABEL}
+            </a>
+            <a
+              href={INSTAGRAM_URL}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+            >
+              <AtSign className="size-4 shrink-0" />
+              @boda.insta on Instagram
             </a>
           </div>
         </aside>

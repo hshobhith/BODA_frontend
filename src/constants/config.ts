@@ -11,7 +11,16 @@ export const API_BASE_URL =
 
 /** Public support inbox — also where the backend sends contact-form messages
  * (its `SUPPORT_EMAIL` env var), so keep the two in sync. */
-export const SUPPORT_EMAIL = "support@boda.local";
+export const SUPPORT_EMAIL = "contactus@bodaborcha.in";
+
+/** Second inbox shown alongside SUPPORT_EMAIL on the contact page and footer. */
+export const SUPPORT_EMAIL_ALT = "boda.support@gmail.com";
+
+/** Support phone: `SUPPORT_PHONE` for `tel:` links, the label for display. */
+export const SUPPORT_PHONE = "+916366076182";
+export const SUPPORT_PHONE_LABEL = "+91 63660 76182";
+
+export const INSTAGRAM_URL = "https://www.instagram.com/boda.insta/";
 
 /** OAuth 2.0 Web client ID for Google sign-in — must match the backend's
  * `GOOGLE_CLIENT_ID`. Empty means Google sign-in isn't configured. */

@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ROUTES } from "@/constants/routes";
 import { useCategoryTree } from "@/features/categories/hooks";
+import { categoryImageUrl } from "@/features/categories/image";
 
 function categoryHref(categoryId: string) {
   return `${ROUTES.products}?categoryId=${encodeURIComponent(categoryId)}`;
@@ -35,42 +36,45 @@ export default function CategoriesPage() {
         <p className="py-16 text-center text-muted-foreground">No categories yet.</p>
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {categories.map((category) => (
-            <Card key={category.id} className="flex flex-col gap-3 p-4">
-              <Link href={categoryHref(category.id)} className="flex flex-col items-center gap-2">
-                <span className="flex size-16 items-center justify-center overflow-hidden rounded-full bg-muted">
-                  {category.imageUrl ? (
-                    <Image
-                      src={category.imageUrl}
-                      alt=""
-                      width={64}
-                      height={64}
-                      className="size-full object-cover"
-                    />
-                  ) : (
-                    <LayoutGrid className="size-6 text-muted-foreground" />
-                  )}
-                </span>
-                <span className="text-center text-sm font-medium text-foreground">
-                  {category.name}
-                </span>
-              </Link>
+          {categories.map((category) => {
+            const imageUrl = categoryImageUrl(category);
+            return (
+              <Card key={category.id} className="flex flex-col gap-3 p-4">
+                <Link href={categoryHref(category.id)} className="flex flex-col items-center gap-2">
+                  <span className="flex size-16 items-center justify-center overflow-hidden rounded-full bg-muted">
+                    {imageUrl ? (
+                      <Image
+                        src={imageUrl}
+                        alt=""
+                        width={64}
+                        height={64}
+                        className="size-full object-cover"
+                      />
+                    ) : (
+                      <LayoutGrid className="size-6 text-muted-foreground" />
+                    )}
+                  </span>
+                  <span className="text-center text-sm font-medium text-foreground">
+                    {category.name}
+                  </span>
+                </Link>
 
-              {category.children.length > 0 && (
-                <div className="flex flex-wrap justify-center gap-1.5 border-t pt-3">
-                  {category.children.map((child) => (
-                    <Link
-                      key={child.id}
-                      href={categoryHref(child.id)}
-                      className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-                    >
-                      {child.name}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </Card>
-          ))}
+                {category.children.length > 0 && (
+                  <div className="flex flex-wrap justify-center gap-1.5 border-t pt-3">
+                    {category.children.map((child) => (
+                      <Link
+                        key={child.id}
+                        href={categoryHref(child.id)}
+                        className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                      >
+                        {child.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

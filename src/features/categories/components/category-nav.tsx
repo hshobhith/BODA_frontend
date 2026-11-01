@@ -7,6 +7,7 @@ import { LayoutGrid } from "lucide-react";
 import { ROUTES } from "@/constants/routes";
 import { cn } from "@/lib/utils";
 import type { Category } from "@/types/category";
+import { categoryImageUrl } from "../image";
 
 function categoryHref(categoryId: string) {
   return `${ROUTES.products}?categoryId=${encodeURIComponent(categoryId)}`;
@@ -31,6 +32,7 @@ export function CategoryNav({ categories, activeCategoryId, className }: Categor
     <div className={cn("flex gap-3 overflow-x-auto pb-2 [scrollbar-width:thin]", className)}>
       {categories.map((category) => {
         const isActive = category.id === activeCategoryId;
+        const imageUrl = categoryImageUrl(category);
         return (
           <Link
             key={category.id}
@@ -41,9 +43,9 @@ export function CategoryNav({ categories, activeCategoryId, className }: Categor
             )}
           >
             <span className="flex size-12 items-center justify-center overflow-hidden rounded-full bg-muted">
-              {category.imageUrl ? (
+              {imageUrl ? (
                 <Image
-                  src={category.imageUrl}
+                  src={imageUrl}
                   alt=""
                   width={48}
                   height={48}

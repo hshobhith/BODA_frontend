@@ -1,8 +1,16 @@
 import Link from "next/link";
-import { AtSign, Camera, Globe } from "lucide-react";
+import { Mail, Phone } from "lucide-react";
+import type { SVGProps } from "react";
 
 import { BrandLogo } from "@/components/shared/brand-logo";
-import { APP_NAME } from "@/constants/config";
+import {
+  APP_NAME,
+  INSTAGRAM_URL,
+  SUPPORT_EMAIL,
+  SUPPORT_EMAIL_ALT,
+  SUPPORT_PHONE,
+  SUPPORT_PHONE_LABEL,
+} from "@/constants/config";
 import { ROUTES } from "@/constants/routes";
 
 interface FooterColumn {
@@ -48,14 +56,31 @@ const FOOTER_COLUMNS: FooterColumn[] = [
   },
 ];
 
-// NOTE: lucide-react dropped brand/wordmark icons (Twitter, Instagram,
-// Facebook, ...) from its icon set. These generic icons are stand-ins —
-// swap for real brand marks (e.g. simple-icons or custom SVGs) once actual
-// social links are wired up.
+// lucide-react has no brand icons, so Instagram's glyph is drawn here in
+// lucide's style (24px grid, 2px stroke) to sit alongside the others.
+function InstagramIcon(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      {...props}
+    >
+      <rect x="2" y="2" width="20" height="20" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+    </svg>
+  );
+}
+
 const SOCIAL_LINKS = [
-  { label: "Twitter", href: "https://twitter.com", icon: AtSign },
-  { label: "Instagram", href: "https://instagram.com", icon: Camera },
-  { label: "Facebook", href: "https://facebook.com", icon: Globe },
+  { label: "BODA on Instagram", href: INSTAGRAM_URL, icon: InstagramIcon, external: true },
+  { label: `Email ${SUPPORT_EMAIL}`, href: `mailto:${SUPPORT_EMAIL}`, icon: Mail, external: false },
+  { label: `Call ${SUPPORT_PHONE_LABEL}`, href: `tel:${SUPPORT_PHONE}`, icon: Phone, external: false },
 ];
 
 export function Footer() {
@@ -90,19 +115,33 @@ export function Footer() {
               essentials delivered fast.
             </p>
             <div className="mt-1 flex items-center gap-3">
-              {SOCIAL_LINKS.map(({ label, href, icon: Icon }) => (
+              {SOCIAL_LINKS.map(({ label, href, icon: Icon, external }) => (
                 <a
                   key={label}
                   href={href}
-                  target="_blank"
-                  rel="noreferrer noopener"
+                  {...(external && { target: "_blank", rel: "noreferrer noopener" })}
                   aria-label={label}
+                  title={label}
                   className="flex size-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:border-primary hover:text-primary"
                 >
                   <Icon className="size-4" />
                 </a>
               ))}
             </div>
+            <ul className="flex flex-col gap-1 text-sm text-muted-foreground">
+              {[SUPPORT_EMAIL, SUPPORT_EMAIL_ALT].map((email) => (
+                <li key={email}>
+                  <a href={`mailto:${email}`} className="break-all transition-colors hover:text-foreground">
+                    {email}
+                  </a>
+                </li>
+              ))}
+              <li>
+                <a href={`tel:${SUPPORT_PHONE}`} className="transition-colors hover:text-foreground">
+                  {SUPPORT_PHONE_LABEL}
+                </a>
+              </li>
+            </ul>
           </div>
 
           {FOOTER_COLUMNS.map((column) => (
