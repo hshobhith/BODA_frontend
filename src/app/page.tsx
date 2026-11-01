@@ -123,17 +123,10 @@ function NearbyStoresSection({ geolocation }: { geolocation: Geolocation }) {
     );
   }
 
+  // A failed lookup gets the same invite banner as an empty one, plus a retry,
+  // rather than a dead-end error message.
   if (nearby.isError || !nearby.data) {
-    return (
-      <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-border py-10 text-center">
-        <p className="text-sm text-muted-foreground">
-          Couldn&apos;t load stores near you. Try browsing all stores instead.
-        </p>
-        <Button asChild size="sm" variant="outline">
-          <Link href={ROUTES.stores}>Browse all stores</Link>
-        </Button>
-      </div>
-    );
+    return <NoStoresNearby onRetry={() => void nearby.refetch()} />;
   }
 
   if (nearby.data.data.length === 0) {

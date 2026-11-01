@@ -135,7 +135,11 @@ export function StoresView() {
           ))}
         </div>
       ) : activeResult.isError ? (
-        <p className="text-sm text-destructive">Couldn&apos;t load stores. Please try again.</p>
+        isSearching ? (
+          <p className="text-sm text-destructive">Couldn&apos;t load stores. Please try again.</p>
+        ) : (
+          <NoStoresNearby onRetry={() => void activeResult.refetch()} />
+        )
       ) : activeResult.data && activeResult.data.data.length > 0 ? (
         <>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
