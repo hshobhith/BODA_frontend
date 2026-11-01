@@ -18,14 +18,14 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { APP_NAME, SITE_URL } from "@/constants/config";
+import { APP_NAME, PUBLIC_APP_URL } from "@/constants/config";
 import { ROUTES } from "@/constants/routes";
 import { useBecomeSeller } from "@/features/auth/hooks";
 import { useHasMounted } from "@/hooks/use-has-mounted";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 
-const SELL_URL = `${SITE_URL.replace(/\/+$/, "")}${ROUTES.sell}`;
+const SELL_URL = `${PUBLIC_APP_URL}${ROUTES.sell}`;
 
 const INVITE_TEXT = `Bring your shop online on ${APP_NAME} for free — no sign-up fee, no monthly charges, no commission. Take pickup and delivery orders from customers nearby and manage your store from your phone.`;
 

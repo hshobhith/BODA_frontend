@@ -17,8 +17,15 @@ export const SUPPORT_EMAIL = "support@boda.local";
  * `GOOGLE_CLIENT_ID`. Empty means Google sign-in isn't configured. */
 export const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
 
-export const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.bodaborcha.in").replace(
+  /\/+$/,
+  ""
+);
+
+/** The live app's public address. Links meant to be sent to other people
+ * (e.g. the "invite a store owner" link) always use this, so they never point
+ * at localhost or a preview deployment. */
+export const PUBLIC_APP_URL = "https://www.bodaborcha.in";
 
 /** LocalStorage key used by the persisted Zustand auth store. */
 export const AUTH_STORAGE_KEY = "boda-auth";
