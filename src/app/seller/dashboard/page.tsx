@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ROUTES } from "@/constants/routes";
 import { AnalyticsOverview } from "@/features/seller/components/analytics-overview";
+import { StoreRejectedNotice } from "@/features/seller/components/store-rejected-notice";
 import { StoreShareCard } from "@/features/seller/components/store-share-card";
 import { useMyStore, useSelectedStoreId, useSellerOrders } from "@/features/seller/hooks";
 import { OrderCard } from "@/features/orders/components/order-card";
@@ -28,15 +29,7 @@ function StoreApprovalBanner({ store }: { store: Store }) {
   }
 
   if (store.approvalStatus === "rejected") {
-    return (
-      <Alert variant="destructive">
-        <ShieldAlert />
-        <AlertTitle>Application rejected</AlertTitle>
-        <AlertDescription>
-          {store.rejectionReason ?? "Please review your store details and contact support."}
-        </AlertDescription>
-      </Alert>
-    );
+    return <StoreRejectedNotice store={store} />;
   }
 
   if (store.approvalStatus === "suspended") {

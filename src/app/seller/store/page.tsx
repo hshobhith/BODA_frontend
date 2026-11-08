@@ -3,6 +3,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DeliverySettingsForm } from "@/features/seller/components/delivery-settings-form";
+import { StoreRejectedNotice } from "@/features/seller/components/store-rejected-notice";
 import { StoreSettingsForm } from "@/features/seller/components/store-settings-form";
 import { StoreStatusToggle } from "@/features/seller/components/store-status-toggle";
 import { WorkingHoursEditor } from "@/features/seller/components/working-hours-editor";
@@ -30,6 +31,10 @@ export default function SellerStorePage() {
           Manage your store&apos;s details, hours, and delivery options.
         </p>
       </div>
+
+      {store.approvalStatus === "rejected" && (
+        <StoreRejectedNotice store={store} showEditLink={false} />
+      )}
 
       <StoreStatusToggle store={store} />
 

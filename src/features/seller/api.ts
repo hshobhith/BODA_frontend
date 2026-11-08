@@ -115,6 +115,14 @@ export const sellerStoreApi = {
     apiClient
       .patch<Store>("/stores/me/store/status", payload, { params: storeId ? { storeId } : undefined })
       .then((r) => r.data),
+
+  /** Sends a rejected store back to the admin approval queue. */
+  resubmit: (storeId?: string) =>
+    apiClient
+      .post<Store>("/stores/me/store/resubmit", undefined, {
+        params: storeId ? { storeId } : undefined,
+      })
+      .then((r) => r.data),
 };
 
 export interface SellerProductListParams {

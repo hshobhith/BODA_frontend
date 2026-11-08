@@ -129,6 +129,21 @@ export function useUpdateStore(storeId?: string) {
   });
 }
 
+export function useResubmitStore(storeId?: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => sellerStoreApi.resubmit(storeId),
+    onSuccess: (store) => {
+      queryClient.invalidateQueries({ queryKey: sellerKeys.myStores() });
+      // Also the layout's copy, cached under the "default" store key.
+      queryClient.invalidateQueries({ queryKey: [...sellerKeys.all, "store", "mine"] });
+      queryClient.setQueryData(sellerKeys.myStore(storeId), store);
+      toast.success("Sent for approval. We'll let you know once an admin has reviewed it.");
+    },
+    onError: (error) => toast.error(errorMessage(error, "Could not send your store for approval.")),
+  });
+}
+
 export function useWorkingHours(enabled: boolean, storeId?: string) {
   return useQuery({
     queryKey: sellerKeys.workingHours(storeId),
