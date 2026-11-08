@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState, type FormEvent } from "react";
 import {
   Heart,
@@ -318,7 +318,7 @@ function AuthActions() {
   }
 
   return (
-    <div className="hidden items-center gap-2 sm:flex">
+    <div className="flex items-center gap-2">
       <Button asChild variant="ghost" size="sm">
         <Link href={ROUTES.login}>Log in</Link>
       </Button>
@@ -360,7 +360,7 @@ function MobileNav() {
             <SheetClose asChild>
               <Link
                 href={ROUTES.storeDetail(storeModeSlug)}
-                className="rounded-md px-2 py-2 text-sm font-medium hover:bg-muted"
+                className="rounded-md px-2 py-2.5 text-sm font-medium hover:bg-muted"
               >
                 Back to the store
               </Link>
@@ -373,7 +373,7 @@ function MobileNav() {
                 <SheetClose asChild key={link.href}>
                   <Link
                     href={link.href}
-                    className="rounded-md px-2 py-2 text-sm font-medium hover:bg-muted"
+                    className="rounded-md px-2 py-2.5 text-sm font-medium hover:bg-muted"
                   >
                     {link.label}
                   </Link>
@@ -388,7 +388,7 @@ function MobileNav() {
                 <SheetClose asChild>
                   <Link
                     href={dashboard.href}
-                    className="rounded-md px-2 py-2 text-sm font-medium hover:bg-muted"
+                    className="rounded-md px-2 py-2.5 text-sm font-medium hover:bg-muted"
                   >
                     {dashboard.label}
                   </Link>
@@ -397,7 +397,7 @@ function MobileNav() {
               <SheetClose asChild>
                 <Link
                   href={ROUTES.account}
-                  className="rounded-md px-2 py-2 text-sm font-medium hover:bg-muted"
+                  className="rounded-md px-2 py-2.5 text-sm font-medium hover:bg-muted"
                 >
                   Account settings
                 </Link>
@@ -405,7 +405,7 @@ function MobileNav() {
               <SheetClose asChild>
                 <Link
                   href={ROUTES.orders}
-                  className="rounded-md px-2 py-2 text-sm font-medium hover:bg-muted"
+                  className="rounded-md px-2 py-2.5 text-sm font-medium hover:bg-muted"
                 >
                   Orders
                 </Link>
@@ -414,7 +414,7 @@ function MobileNav() {
                 <SheetClose asChild>
                   <Link
                     href={ROUTES.wishlist}
-                    className="rounded-md px-2 py-2 text-sm font-medium hover:bg-muted"
+                    className="rounded-md px-2 py-2.5 text-sm font-medium hover:bg-muted"
                   >
                     Wishlist
                   </Link>
@@ -423,7 +423,7 @@ function MobileNav() {
               <SheetClose asChild>
                 <Link
                   href={ROUTES.accountAddresses}
-                  className="rounded-md px-2 py-2 text-sm font-medium hover:bg-muted"
+                  className="rounded-md px-2 py-2.5 text-sm font-medium hover:bg-muted"
                 >
                   Addresses
                 </Link>
@@ -452,6 +452,11 @@ function MobileNav() {
               </SheetClose>
             </div>
           )}
+          <div className="my-2 h-px bg-border" />
+          <div className="flex items-center justify-between px-2 py-1 text-sm font-medium">
+            Theme
+            <ThemeToggle />
+          </div>
         </div>
       </SheetContent>
     </Sheet>
@@ -459,6 +464,11 @@ function MobileNav() {
 }
 
 export function Header() {
+  const pathname = usePathname();
+  // Dashboards have their own navigation; a product search row there is noise.
+  const isDashboard =
+    pathname.startsWith(ROUTES.sellerRoot) || pathname.startsWith(ROUTES.adminRoot);
+
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/80">
       <div className="mx-auto flex max-w-7xl items-center gap-2 px-4 py-2.5 sm:gap-3 sm:px-6 lg:px-8">
@@ -470,15 +480,24 @@ export function Header() {
         <SearchBar className="hidden max-w-xl flex-1 md:block store-mode:hidden!" />
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
           <DesktopNav />
-          <ThemeToggle />
+          {/* On phones, the theme switch lives in the menu and cart/account in the bottom tab bar. */}
+          <div className="hidden md:flex">
+            <ThemeToggle />
+          </div>
           <NotificationBell />
-          <CartButton />
-          <AuthActions />
+          <div className="hidden md:flex">
+            <CartButton />
+          </div>
+          <div className="hidden md:flex">
+            <AuthActions />
+          </div>
         </div>
       </div>
-      <div className="border-t border-border px-4 py-2 md:hidden store-mode:hidden!">
-        <SearchBar />
-      </div>
+      {!isDashboard && (
+        <div className="border-t border-border px-4 py-2 md:hidden store-mode:hidden!">
+          <SearchBar />
+        </div>
+      )}
     </header>
   );
 }

@@ -4,7 +4,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import { Footer } from "@/components/layout/footer";
+import { FooterGate } from "@/components/layout/footer-gate";
 import { Header } from "@/components/layout/header";
+import { MobileTabBar } from "@/components/layout/mobile-tab-bar";
 import { Toaster } from "@/components/ui/sonner";
 import { NotificationsListener } from "@/features/notifications/components/notifications-listener";
 import { APP_DESCRIPTION, APP_NAME, SITE_URL } from "@/constants/config";
@@ -80,10 +82,11 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0f1115" },
-  ],
+  // Lets the app draw under the iPhone home indicator; the bottom tab bar
+  // pads itself with env(safe-area-inset-bottom).
+  viewportFit: "cover",
+  // The app opens in light mode regardless of the phone's setting.
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({
@@ -105,8 +108,12 @@ export default function RootLayout({
           <QueryProvider>
             <Header />
             <main className="flex-1">{children}</main>
-            <Footer />
-            <Toaster />
+            <FooterGate>
+              <Footer />
+            </FooterGate>
+            <MobileTabBar />
+            {/* On phones, keep toasts above the bottom tab bar. */}
+            <Toaster mobileOffset={{ bottom: "calc(4.5rem + env(safe-area-inset-bottom))" }} />
             <NotificationsListener />
           </QueryProvider>
         </ThemeProvider>

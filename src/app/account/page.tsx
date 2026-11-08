@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { Skeleton } from "@/components/ui/skeleton";
 import { ROUTES } from "@/constants/routes";
+import { AccountMenuList } from "@/features/auth/components/account-menu-list";
 import { BecomeSellerCard } from "@/features/auth/components/become-seller-card";
 // Password change is switched off while sign-in is Google-only (Google
 // accounts have no password). Restore this import and the form below to bring it back.
@@ -52,6 +53,7 @@ export default function AccountPage() {
           Manage your profile details.
         </p>
       </div>
+      <AccountMenuList />
       {user?.role === "customer" && <BecomeSellerCard />}
       <ProfileForm />
       {/* <ChangePasswordForm /> */}

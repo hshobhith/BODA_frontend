@@ -3,18 +3,9 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ClipboardList, LayoutDashboard, MessageSquareText, Menu, Package, Store as StoreIcon } from "lucide-react";
+import { ClipboardList, LayoutDashboard, MessageSquareText, Package, Store as StoreIcon } from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ROUTES } from "@/constants/routes";
 import { StoreSwitcher } from "@/features/seller/components/store-switcher";
@@ -49,30 +40,6 @@ function SellerNavLinks({ pathname }: { pathname: string }) {
             <item.icon className="size-4" />
             {item.label}
           </Link>
-        );
-      })}
-    </nav>
-  );
-}
-
-function SellerMobileNavLinks({ pathname }: { pathname: string }) {
-  return (
-    <nav className="flex flex-col gap-1 px-4">
-      {NAV_ITEMS.map((item) => {
-        const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
-        return (
-          <SheetClose asChild key={item.href}>
-            <Link
-              href={item.href}
-              className={cn(
-                "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted",
-                isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground"
-              )}
-            >
-              <item.icon className="size-4" />
-              {item.label}
-            </Link>
-          </SheetClose>
         );
       })}
     </nav>
@@ -167,24 +134,10 @@ export default function SellerLayout({ children }: { children: React.ReactNode }
         </div>
       </aside>
 
-      <div className="flex items-center justify-between lg:hidden">
-        <h1 className="text-lg font-semibold text-foreground">Seller dashboard</h1>
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="icon" aria-label="Open seller navigation">
-              <Menu className="size-4" />
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-64">
-            <SheetHeader>
-              <SheetTitle>Seller tools</SheetTitle>
-            </SheetHeader>
-            <div className="px-4 pb-2">
-              <StoreSwitcher />
-            </div>
-            <SellerMobileNavLinks pathname={pathname} />
-          </SheetContent>
-        </Sheet>
+      {/* Phones and tablets: the sections are in the bottom tab bar (MobileTabBar),
+          so only the store switcher is needed up here. */}
+      <div className="lg:hidden">
+        <StoreSwitcher />
       </div>
 
       <main className="min-w-0 flex-1">{children}</main>

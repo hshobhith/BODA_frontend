@@ -131,6 +131,8 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* App feel on phones: no grey flash over links and buttons on tap. */
+    -webkit-tap-highlight-color: transparent;
   }
   html {
     @apply font-sans;
