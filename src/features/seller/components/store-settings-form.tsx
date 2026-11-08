@@ -15,12 +15,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { LocationPickerDialog } from "@/components/shared/location-picker";
 import type { UpdateStorePayload } from "../api";
 import { useUpdateStore } from "../hooks";
 import { STORE_VISIBILITY_OPTIONS, storeSchema, type StoreFormValues } from "../schemas";
 import { STORE_TYPE_META, type Store } from "@/types/store";
 import { ImageUploader } from "./image-uploader";
+import { StoreLocationSection, useStoreLocation } from "./store-location-section";
 
 interface StoreSettingsFormProps {
   store: Store;
@@ -48,17 +48,17 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
       state: store.state ?? "",
       country: store.country ?? "India",
       pincode: store.pincode ?? "",
-      lat: store.lat ?? 12.9716,
-      lng: store.lng ?? 77.5946,
+      // No fallback point: a store without a saved pin has to set one.
+      lat: store.lat ?? undefined,
+      lng: store.lng ?? undefined,
       visibilityType: (store.visibilityType as StoreFormValues["visibilityType"]) ?? "radius_10",
     },
   });
+  const location = useStoreLocation(form);
 
   const visibilityType = useWatch({ control: form.control, name: "visibilityType" });
   const logoUrl = useWatch({ control: form.control, name: "logoUrl" });
   const bannerUrl = useWatch({ control: form.control, name: "bannerUrl" });
-  const lat = useWatch({ control: form.control, name: "lat" });
-  const lng = useWatch({ control: form.control, name: "lng" });
 
   const storeTypeMeta = STORE_TYPE_META[store.storeType ?? "retail"];
 
@@ -77,7 +77,16 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
   }
 
   return (
-    <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
+    <form
+      noValidate
+      onSubmit={async (event) => {
+        event.preventDefault();
+        // Match the pin to a just-edited address before validating and saving.
+        await location.flush();
+        await form.handleSubmit(onSubmit)();
+      }}
+      className="flex flex-col gap-6"
+    >
       <FieldGroup>
         <p className="text-sm text-muted-foreground">
           Store type: <span className="font-medium text-foreground">{storeTypeMeta.label}</span>
@@ -110,6 +119,8 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
           <Textarea id="settings-description" {...form.register("description")} />
           <FieldError errors={[form.formState.errors.description]} />
         </Field>
+
+        <StoreLocationSection form={form} location={location} idPrefix="settings-" />
 
         <div className="grid gap-4 sm:grid-cols-2">
           <Field data-invalid={!!form.formState.errors.businessType}>
@@ -169,56 +180,6 @@ export function StoreSettingsForm({ store }: StoreSettingsFormProps) {
             <FieldError errors={[form.formState.errors.email]} />
           </Field>
         </div>
-
-        <Field data-invalid={!!form.formState.errors.addressLine}>
-          <FieldLabel htmlFor="settings-addressLine">Address line</FieldLabel>
-          <Input id="settings-addressLine" {...form.register("addressLine")} />
-          <FieldError errors={[form.formState.errors.addressLine]} />
-        </Field>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field data-invalid={!!form.formState.errors.city}>
-            <FieldLabel htmlFor="settings-city">City</FieldLabel>
-            <Input id="settings-city" {...form.register("city")} />
-            <FieldError errors={[form.formState.errors.city]} />
-          </Field>
-          <Field data-invalid={!!form.formState.errors.state}>
-            <FieldLabel htmlFor="settings-state">State</FieldLabel>
-            <Input id="settings-state" {...form.register("state")} />
-            <FieldError errors={[form.formState.errors.state]} />
-          </Field>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <Field data-invalid={!!form.formState.errors.country}>
-            <FieldLabel htmlFor="settings-country">Country</FieldLabel>
-            <Input id="settings-country" {...form.register("country")} />
-            <FieldError errors={[form.formState.errors.country]} />
-          </Field>
-          <Field data-invalid={!!form.formState.errors.pincode}>
-            <FieldLabel htmlFor="settings-pincode">Pincode</FieldLabel>
-            <Input id="settings-pincode" {...form.register("pincode")} />
-            <FieldError errors={[form.formState.errors.pincode]} />
-          </Field>
-        </div>
-
-        <Field>
-          <FieldLabel>Location</FieldLabel>
-          <div className="flex flex-col gap-2 rounded-lg border p-3">
-            <p className="text-sm text-muted-foreground">
-              {lat && lng ? `${lat.toFixed(5)}, ${lng.toFixed(5)}` : "No location set yet"}
-            </p>
-            <LocationPickerDialog
-              value={{ lat, lng }}
-              triggerLabel="Change location"
-              onConfirm={(result) => {
-                form.setValue("lat", result.lat, { shouldValidate: true, shouldDirty: true });
-                form.setValue("lng", result.lng, { shouldValidate: true, shouldDirty: true });
-              }}
-            />
-          </div>
-          <FieldError errors={[form.formState.errors.lat, form.formState.errors.lng]} />
-        </Field>
 
         <Button type="submit" disabled={updateStore.isPending} className="w-fit">
           {updateStore.isPending && <Loader2 className="size-4 animate-spin" />}

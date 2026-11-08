@@ -54,8 +54,12 @@ function StoreTypeAndLicence({ store }: { store: Store }) {
   );
 }
 
+/** Pending stores shown per page before pagination kicks in. */
+const PENDING_PAGE_SIZE = 10;
+
 export function StoreApprovalTable() {
-  const pendingQuery = usePendingStores();
+  const [pendingPage, setPendingPage] = useState(1);
+  const pendingQuery = usePendingStores({ page: pendingPage, limit: PENDING_PAGE_SIZE });
   const approve = useApproveStore();
   const suspend = useSuspendStore();
   const [rejectTarget, setRejectTarget] = useState<Store | null>(null);
@@ -66,6 +70,14 @@ export function StoreApprovalTable() {
   const searchQuery = useApprovedStoreSearch(search);
 
   const pending = pendingQuery.data?.data ?? [];
+  const pendingTotal = pendingQuery.data?.meta.total ?? 0;
+  const pendingPages = Math.max(1, Math.ceil(pendingTotal / PENDING_PAGE_SIZE));
+
+  // Approving/rejecting the last store on a page shrinks the total — step back
+  // so the admin isn't left looking at an empty page while others remain.
+  if (pendingQuery.data && pendingPage > pendingPages) {
+    setPendingPage(pendingPages);
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -109,6 +121,32 @@ export function StoreApprovalTable() {
                 </div>
               </div>
             ))
+          )}
+          {pendingPages > 1 && (
+            <div className="flex items-center justify-between gap-2 pt-2">
+              <p className="text-sm text-muted-foreground">
+                Showing {(pendingPage - 1) * PENDING_PAGE_SIZE + 1}–
+                {Math.min(pendingPage * PENDING_PAGE_SIZE, pendingTotal)} of {pendingTotal}
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={pendingPage <= 1 || pendingQuery.isFetching}
+                  onClick={() => setPendingPage((p) => p - 1)}
+                >
+                  Previous
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={pendingPage >= pendingPages || pendingQuery.isFetching}
+                  onClick={() => setPendingPage((p) => p + 1)}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
           )}
         </CardContent>
       </Card>

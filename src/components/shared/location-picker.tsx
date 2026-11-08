@@ -30,6 +30,20 @@ const LocationPickerMap = dynamic(() => import("./location-picker-map"), {
   ),
 });
 
+function ignorePinChange() {}
+
+/** Small, read-only map showing a saved pin — no dragging, zooming or clicks. */
+export function LocationPreviewMap({ position }: { position: { lat: number; lng: number } }) {
+  return (
+    <LocationPickerMap
+      position={position}
+      onChange={ignorePinChange}
+      interactive={false}
+      height={180}
+    />
+  );
+}
+
 // Fallback center (Bangalore) used when neither a saved value nor the
 // browser's geolocation is available — matches the default already used by
 // the address/store forms before this picker existed.
@@ -49,6 +63,7 @@ interface LocationPickerDialogProps {
   value: { lat: number; lng: number } | null;
   onConfirm: (result: LocationPickerResult) => void;
   triggerLabel?: string;
+  triggerVariant?: "outline" | "ghost" | "secondary";
 }
 
 interface NominatimAddress {
@@ -65,14 +80,14 @@ interface NominatimAddress {
   postcode?: string;
 }
 
-interface NominatimResult {
+export interface NominatimResult {
   lat: string;
   lon: string;
   display_name: string;
   address?: NominatimAddress;
 }
 
-function parseNominatimAddress(
+export function parseNominatimAddress(
   address: NominatimAddress | undefined
 ): Omit<LocationPickerResult, "lat" | "lng"> {
   if (!address) {
@@ -99,14 +114,14 @@ function parseNominatimAddress(
 // can show — suggestions just never appear). The backend proxy has no such
 // restriction and can set the identifying User-Agent Nominatim's usage
 // policy requires.
-async function reverseGeocode(position: { lat: number; lng: number }): Promise<NominatimResult | null> {
+export async function reverseGeocode(position: { lat: number; lng: number }): Promise<NominatimResult | null> {
   const { data } = await apiClient.get<NominatimResult | null>("/geocoding/reverse", {
     params: { lat: position.lat, lng: position.lng },
   });
   return data;
 }
 
-async function searchAddress(query: string): Promise<NominatimResult[]> {
+export async function searchAddress(query: string): Promise<NominatimResult[]> {
   const { data } = await apiClient.get<NominatimResult[]>("/geocoding/search", {
     params: { q: query },
   });
@@ -124,6 +139,7 @@ export function LocationPickerDialog({
   value,
   onConfirm,
   triggerLabel = "Pick location on map",
+  triggerVariant = "outline",
 }: LocationPickerDialogProps) {
   const [open, setOpen] = useState(false);
   const [pin, setPin] = useState(value ?? DEFAULT_CENTER);
@@ -223,7 +239,7 @@ export function LocationPickerDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button type="button" variant="outline" size="sm" className="w-fit gap-1.5">
+        <Button type="button" variant={triggerVariant} size="sm" className="w-fit gap-1.5">
           <MapPin className="size-3.5" /> {triggerLabel}
         </Button>
       </DialogTrigger>

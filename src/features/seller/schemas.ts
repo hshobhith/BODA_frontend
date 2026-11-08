@@ -42,6 +42,9 @@ export const STORE_VISIBILITY_OPTIONS = [
   { value: "global", label: "Globally" },
 ] as const;
 
+const STORE_LOCATION_REQUIRED =
+  "Set your store's location — use your current location, pick it on the map, or type the full address.";
+
 export const storeSchema = z.object({
   name: z.string().min(2, "Store name is required."),
   logoUrl: z.string().optional(),
@@ -58,8 +61,10 @@ export const storeSchema = z.object({
   state: z.string().min(1, "State is required."),
   country: z.string().min(1, "Country is required."),
   pincode: z.string().min(3, "Pincode is required."),
-  lat: z.number().min(-90).max(90),
-  lng: z.number().min(-180).max(180),
+  // No default location: a store must be placed on purpose (current location,
+  // map, or a typed address), never silently left at some fallback point.
+  lat: z.number({ error: STORE_LOCATION_REQUIRED }).min(-90).max(90),
+  lng: z.number({ error: STORE_LOCATION_REQUIRED }).min(-180).max(180),
   visibilityType: z.enum([
     "radius_5",
     "radius_10",

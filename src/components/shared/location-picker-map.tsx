@@ -42,9 +42,17 @@ function ClickHandler({ onPick }: { onPick: (position: LatLng) => void }) {
 interface LocationPickerMapProps {
   position: LatLng;
   onChange: (position: LatLng) => void;
+  /** `false` renders a static preview: no dragging, zooming, or picking. */
+  interactive?: boolean;
+  height?: number;
 }
 
-export default function LocationPickerMap({ position, onChange }: LocationPickerMapProps) {
+export default function LocationPickerMap({
+  position,
+  onChange,
+  interactive = true,
+  height = 320,
+}: LocationPickerMapProps) {
   function handleDragEnd(event: LeafletEvent & { target: LeafletMarker }) {
     const latLng = event.target.getLatLng();
     onChange({ lat: latLng.lat, lng: latLng.lng });
@@ -54,8 +62,14 @@ export default function LocationPickerMap({ position, onChange }: LocationPicker
     <MapContainer
       center={position}
       zoom={16}
-      scrollWheelZoom
-      style={{ width: "100%", height: "320px" }}
+      scrollWheelZoom={interactive}
+      dragging={interactive}
+      doubleClickZoom={interactive}
+      touchZoom={interactive}
+      boxZoom={interactive}
+      keyboard={interactive}
+      zoomControl={interactive}
+      style={{ width: "100%", height: `${height}px` }}
       className="rounded-lg"
     >
       <TileLayer
@@ -65,10 +79,10 @@ export default function LocationPickerMap({ position, onChange }: LocationPicker
       <Marker
         position={position}
         icon={markerIcon}
-        draggable
+        draggable={interactive}
         eventHandlers={{ dragend: handleDragEnd }}
       />
-      <ClickHandler onPick={onChange} />
+      {interactive && <ClickHandler onPick={onChange} />}
       <RecenterOnChange position={position} />
     </MapContainer>
   );
