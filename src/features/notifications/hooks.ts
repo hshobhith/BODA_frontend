@@ -70,6 +70,8 @@ export function useMarkAllNotificationsRead() {
 
 /** Where a notification leads when clicked, if anywhere. */
 export function notificationHref(notification: AppNotification): string | null {
+  // Admins: a new store waiting for approval opens the approval queue.
+  if (notification.type === "store.submitted") return ROUTES.adminStores;
   const orderId = notification.metadata?.orderId;
   if (typeof orderId === "string") return ROUTES.orderDetail(orderId);
   // Store moderation (approved / rejected / suspended) goes to the seller's dashboard.
