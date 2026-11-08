@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { BadgeCheck, Heart, Mail, MapPin, Phone, Store as StoreIcon } from "lucide-react";
+import { BadgeCheck, Heart, Mail, MapPin, Phone } from "lucide-react";
 import { toast } from "sonner";
 
 import { RatingStars } from "@/components/shared/rating-stars";
@@ -11,6 +11,7 @@ import { useToggleWishlist, useWishlistCheck } from "@/features/wishlist/hooks";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 import { STORE_TYPE_META, type Store } from "@/types/store";
+import { StoreArtwork } from "./store-artwork";
 
 interface StoreHeaderProps {
   store: Store;
@@ -70,7 +71,7 @@ export function StoreHeader({ store, className }: StoreHeaderProps) {
             priority
           />
         ) : (
-          <div className="size-full bg-gradient-to-br from-accent to-muted" />
+          <StoreArtwork name={store.name} storeType={store.storeType} variant="cover" />
         )}
       </div>
 
@@ -79,9 +80,7 @@ export function StoreHeader({ store, className }: StoreHeaderProps) {
           {store.logoUrl ? (
             <Image src={store.logoUrl} alt="" fill sizes="96px" className="object-cover" />
           ) : (
-            <div className="flex size-full items-center justify-center bg-muted">
-              <StoreIcon className="size-8 text-muted-foreground" />
-            </div>
+            <StoreArtwork name={store.name} storeType={store.storeType} variant="logo" />
           )}
         </div>
 

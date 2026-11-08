@@ -2,7 +2,7 @@ import type { MouseEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { BadgeCheck, Bike, Heart, MapPin, ShoppingBag, Store as StoreIcon } from "lucide-react";
+import { BadgeCheck, Bike, Heart, MapPin, ShoppingBag } from "lucide-react";
 import { toast } from "sonner";
 
 import { RatingStars } from "@/components/shared/rating-stars";
@@ -14,6 +14,7 @@ import { useToggleWishlist, useWishlistCheck } from "@/features/wishlist/hooks";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth-store";
 import type { Store } from "@/types/store";
+import { StoreArtwork } from "./store-artwork";
 
 interface StoreCardProps {
   store: Store;
@@ -57,23 +58,27 @@ function StoreWishlistButton({ store }: { store: Store }) {
   );
 }
 
-/** Store logo/thumbnail with an icon fallback when there's no `logoUrl`. */
+/** Store logo, else banner, else colourful artwork for the store — never a blank box. */
 function StoreThumbnail({ store }: { store: Store }) {
-  if (store.logoUrl) {
+  const src = store.logoUrl || store.bannerUrl;
+  if (!src) {
     return (
-      <Image
-        src={store.logoUrl}
-        alt=""
-        fill
-        sizes="(min-width: 1024px) 20vw, 50vw"
-        className="object-cover"
+      <StoreArtwork
+        name={store.name}
+        storeType={store.storeType}
+        variant="thumb"
+        className="transition-transform duration-300 group-hover:scale-105"
       />
     );
   }
   return (
-    <div className="flex size-full items-center justify-center bg-muted">
-      <StoreIcon className="size-8 text-muted-foreground" />
-    </div>
+    <Image
+      src={src}
+      alt=""
+      fill
+      sizes="(min-width: 1024px) 20vw, 50vw"
+      className="object-cover transition-transform duration-300 group-hover:scale-105"
+    />
   );
 }
 

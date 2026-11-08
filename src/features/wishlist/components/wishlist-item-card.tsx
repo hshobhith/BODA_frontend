@@ -8,6 +8,7 @@ import { RatingStars } from "@/components/shared/rating-stars";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ROUTES } from "@/constants/routes";
+import { StoreArtwork } from "@/features/stores/components/store-artwork";
 import { useToggleWishlist } from "@/features/wishlist/hooks";
 import type { WishlistItem } from "@/types/wishlist";
 
@@ -61,10 +62,17 @@ export function WishlistItemCard({ item }: WishlistItemCardProps) {
               sizes="(min-width: 1024px) 20vw, 50vw"
               className="object-cover transition-transform group-hover:scale-105"
             />
-          ) : (
+          ) : isProduct ? (
             <div className="flex size-full items-center justify-center">
               <ImageOff className="size-8 text-muted-foreground" />
             </div>
+          ) : (
+            // A store without a logo gets its colourful artwork rather than an empty tile.
+            <StoreArtwork
+              name={item.target.name}
+              variant="thumb"
+              className="transition-transform group-hover:scale-105"
+            />
           )}
         </div>
         <div className="flex flex-col gap-1 px-4 py-3">
