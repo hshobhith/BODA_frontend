@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 
 import "./globals.css";
 
@@ -117,6 +118,17 @@ export default function RootLayout({
             <NotificationsListener />
           </QueryProvider>
         </ThemeProvider>
+        {/* Vercel Web Analytics without the @vercel/analytics package: Vercel serves this
+            script from the site itself, and it tracks client-side navigations on its own.
+            Only rendered in Vercel builds — elsewhere the path doesn't exist. */}
+        {process.env.VERCEL === "1" && (
+          <>
+            <Script id="vercel-analytics-queue" strategy="afterInteractive">
+              {"window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };"}
+            </Script>
+            <Script src="/_vercel/insights/script.js" strategy="afterInteractive" />
+          </>
+        )}
       </body>
     </html>
   );
