@@ -10,7 +10,15 @@ import { Header } from "@/components/layout/header";
 import { MobileTabBar } from "@/components/layout/mobile-tab-bar";
 import { Toaster } from "@/components/ui/sonner";
 import { NotificationsListener } from "@/features/notifications/components/notifications-listener";
-import { APP_DESCRIPTION, APP_NAME, SITE_URL } from "@/constants/config";
+import {
+  APP_DESCRIPTION,
+  APP_NAME,
+  INSTAGRAM_URL,
+  PUBLIC_APP_URL,
+  SUPPORT_EMAIL,
+  SUPPORT_PHONE,
+} from "@/constants/config";
+import { ROUTES } from "@/constants/routes";
 import { STORE_MODE_BOOT_SCRIPT } from "@/lib/store-mode";
 import { QueryProvider } from "@/providers/query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
@@ -26,7 +34,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
+  // The live domain, not SITE_URL (an env var that can still hold an old preview
+  // address): every absolute URL Google and link previews see is built from this.
+  metadataBase: new URL(PUBLIC_APP_URL),
   title: {
     default: `${APP_NAME} — Your Local Marketplace`,
     template: `%s | ${APP_NAME}`,
@@ -34,12 +44,17 @@ export const metadata: Metadata = {
   description: APP_DESCRIPTION,
   applicationName: APP_NAME,
   keywords: [
+    "BODA",
+    "bodaborcha",
     "local marketplace",
-    "multi-vendor",
-    "local commerce",
     "nearby stores",
-    "online shopping",
-    "delivery",
+    "local shops near me",
+    "online grocery delivery",
+    "order from local stores",
+    "restaurants near me",
+    "pharmacy near me",
+    "sell online for free",
+    "online shopping India",
   ],
   authors: [{ name: APP_NAME }],
   creator: APP_NAME,
@@ -54,8 +69,8 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    locale: "en_US",
-    url: SITE_URL,
+    locale: "en_IN",
+    url: PUBLIC_APP_URL,
     siteName: APP_NAME,
     title: `${APP_NAME} — Your Local Marketplace`,
     description: APP_DESCRIPTION,
@@ -78,6 +93,51 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+};
+
+/**
+ * Schema.org data for Google: who runs the site (name, logo, contact, social
+ * profile) and how to search it, which can show a search box under the site's
+ * Google result. https://developers.google.com/search/docs/appearance/structured-data
+ */
+const STRUCTURED_DATA = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${PUBLIC_APP_URL}/#organization`,
+      name: APP_NAME,
+      url: PUBLIC_APP_URL,
+      logo: `${PUBLIC_APP_URL}/icons/icon-512.png`,
+      email: SUPPORT_EMAIL,
+      sameAs: [INSTAGRAM_URL],
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        email: SUPPORT_EMAIL,
+        telephone: SUPPORT_PHONE,
+        areaServed: "IN",
+        availableLanguage: ["en"],
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${PUBLIC_APP_URL}/#website`,
+      name: APP_NAME,
+      url: PUBLIC_APP_URL,
+      description: APP_DESCRIPTION,
+      publisher: { "@id": `${PUBLIC_APP_URL}/#organization` },
+      inLanguage: "en-IN",
+      potentialAction: {
+        "@type": "SearchAction",
+        target: {
+          "@type": "EntryPoint",
+          urlTemplate: `${PUBLIC_APP_URL}${ROUTES.search}?q={search_term_string}`,
+        },
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ],
 };
 
 export const viewport: Viewport = {
@@ -103,6 +163,10 @@ export default function RootLayout({
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: STORE_MODE_BOOT_SCRIPT }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(STRUCTURED_DATA) }}
+        />
       </head>
       <body className="flex min-h-full flex-col">
         <ThemeProvider>

@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SITE_URL } from "@/constants/config";
+import { PUBLIC_APP_URL } from "@/constants/config";
 import { ROUTES } from "@/constants/routes";
 import type { Store } from "@/types/store";
 import type { BannerLinkKind } from "../store-banner";
@@ -96,7 +96,9 @@ interface ShareLinkPanelProps {
 
 function ShareLinkPanel({ store, kind, settings, onSettingsChange }: ShareLinkPanelProps) {
   const path = kind === "private" ? ROUTES.storeOnly(store.slug) : ROUTES.storeDetail(store.slug);
-  const shareUrl = `${SITE_URL}${path}`;
+  // Always the live domain: these links end up on printed QR codes and in
+  // WhatsApp messages, so they must never point at a preview or vercel.app URL.
+  const shareUrl = `${PUBLIC_APP_URL}${path}`;
   const fileSuffix = kind === "private" ? "-private" : "";
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
