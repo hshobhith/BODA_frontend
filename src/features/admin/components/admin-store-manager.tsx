@@ -17,6 +17,7 @@ import { WorkingHoursEditor } from "@/features/seller/components/working-hours-e
 import { useMyStore } from "@/features/seller/hooks";
 import type { ApiError } from "@/types/api";
 import { useAdminStore, useResendSellerInvite } from "../hooks";
+import { StoreModerationButton } from "./store-moderation-button";
 
 export const ADMIN_STORE_TABS = ["details", "hours", "delivery", "products"] as const;
 export type AdminStoreTab = (typeof ADMIN_STORE_TABS)[number];
@@ -40,6 +41,8 @@ export function AdminStoreManager({ storeId, initialTab = "details" }: AdminStor
 
   const store = storeQuery.data;
   const seller = adminStoreQuery.data?.seller;
+  // From the admin query: approve/suspend refresh it, not the seller-side store cache.
+  const approvalStatus = adminStoreQuery.data?.approvalStatus ?? store?.approvalStatus;
 
   if (storeQuery.isError) {
     const notFound = (storeQuery.error as unknown as ApiError)?.statusCode === 404;
@@ -78,8 +81,17 @@ export function AdminStoreManager({ storeId, initialTab = "details" }: AdminStor
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="truncate text-2xl font-semibold tracking-tight text-foreground">{store.name}</h1>
-              <Badge variant={store.approvalStatus === "approved" ? "default" : "secondary"} className="capitalize">
-                {store.approvalStatus}
+              <Badge
+                variant={
+                  approvalStatus === "approved"
+                    ? "default"
+                    : approvalStatus === "suspended" || approvalStatus === "rejected"
+                      ? "destructive"
+                      : "secondary"
+                }
+                className="capitalize"
+              >
+                {approvalStatus}
               </Badge>
             </div>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -93,14 +105,17 @@ export function AdminStoreManager({ storeId, initialTab = "details" }: AdminStor
               )}
             </p>
           </div>
-          {store.approvalStatus === "approved" && (
-            <Button asChild variant="outline" size="sm">
-              <Link href={ROUTES.storeDetail(store.slug)} target="_blank" rel="noreferrer">
-                <ExternalLink className="size-4" />
-                View public page
-              </Link>
-            </Button>
-          )}
+          <div className="flex flex-wrap gap-2">
+            {approvalStatus === "approved" && (
+              <Button asChild variant="outline" size="sm">
+                <Link href={ROUTES.storeDetail(store.slug)} target="_blank" rel="noreferrer">
+                  <ExternalLink className="size-4" />
+                  View public page
+                </Link>
+              </Button>
+            )}
+            <StoreModerationButton store={{ id: store.id, approvalStatus }} />
+          </div>
         </div>
       </div>
 

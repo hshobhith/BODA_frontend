@@ -111,11 +111,6 @@ export const adminApi = {
       .post<{ sent: true; email: string }>(`/admin/stores/${id}/resend-invite`)
       .then((r) => r.data),
 
-  searchApprovedStores: (q: string, params?: { page?: number; limit?: number }) =>
-    apiClient
-      .get<PaginatedResponse<Store>>("/stores/search", { params: { q, ...params } })
-      .then((r) => r.data),
-
   archiveProduct: (id: string) =>
     apiClient.patch<void>(`/admin/products/${id}/archive`).then((r) => r.data),
 

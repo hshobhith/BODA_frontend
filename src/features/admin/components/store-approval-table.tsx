@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Search } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,15 +12,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import {
-  useApprovedStoreSearch,
   useApproveStore,
   usePendingStores,
   useRejectStore,
-  useSuspendStore,
 } from "../hooks";
 import { STORE_TYPE_META, type Store } from "@/types/store";
 
@@ -61,13 +57,9 @@ export function StoreApprovalTable() {
   const [pendingPage, setPendingPage] = useState(1);
   const pendingQuery = usePendingStores({ page: pendingPage, limit: PENDING_PAGE_SIZE });
   const approve = useApproveStore();
-  const suspend = useSuspendStore();
   const [rejectTarget, setRejectTarget] = useState<Store | null>(null);
   const [reason, setReason] = useState("");
   const reject = useRejectStore();
-
-  const [search, setSearch] = useState("");
-  const searchQuery = useApprovedStoreSearch(search);
 
   const pending = pendingQuery.data?.data ?? [];
   const pendingTotal = pendingQuery.data?.meta.total ?? 0;
@@ -148,62 +140,6 @@ export function StoreApprovalTable() {
               </div>
             </div>
           )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Manage approved stores</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-3">
-          <div className="relative">
-            <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Search by store name or city..."
-              className="pl-9"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          {search.trim() && (
-            <div className="flex flex-col gap-2">
-              {searchQuery.isLoading && <Skeleton className="h-16 w-full" />}
-              {(searchQuery.data?.data ?? []).map((store) => (
-                <div
-                  key={store.id}
-                  className="flex items-center justify-between rounded-lg border p-3"
-                >
-                  <div>
-                    <p className="font-medium text-foreground">{store.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {store.city}, {store.state} &middot;{" "}
-                      <Badge variant="secondary" className="ml-1">
-                        {store.approvalStatus}
-                      </Badge>
-                    </p>
-                  </div>
-                  {store.approvalStatus === "approved" && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="text-destructive"
-                      onClick={() => suspend.mutate(store.id)}
-                    >
-                      Suspend
-                    </Button>
-                  )}
-                </div>
-              ))}
-              {searchQuery.data && searchQuery.data.data.length === 0 && (
-                <p className="text-sm text-muted-foreground">No matching stores.</p>
-              )}
-            </div>
-          )}
-          <p className="text-xs text-muted-foreground">
-            There&apos;s no dedicated &quot;list all stores&quot; admin endpoint yet — this
-            searches the public approved-stores index, which is enough to locate a store to
-            suspend.
-          </p>
         </CardContent>
       </Card>
 

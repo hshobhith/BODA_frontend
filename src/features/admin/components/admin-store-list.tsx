@@ -29,6 +29,7 @@ import { useDebounce } from "@/hooks/use-debounce";
 import type { AdminStore } from "@/types/admin";
 import { STORE_TYPE_META, type StoreApprovalStatus } from "@/types/store";
 import { useAdminStores } from "../hooks";
+import { StoreModerationButton } from "./store-moderation-button";
 
 const PAGE_SIZE = 20;
 const ALL = "all";
@@ -160,9 +161,12 @@ export function AdminStoreList() {
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button asChild size="sm" variant="outline">
-                      <Link href={ROUTES.adminStoreManage(store.id)}>Manage</Link>
-                    </Button>
+                    <div className="flex justify-end gap-2">
+                      <StoreModerationButton store={store} />
+                      <Button asChild size="sm" variant="outline">
+                        <Link href={ROUTES.adminStoreManage(store.id)}>Manage</Link>
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

@@ -28,7 +28,6 @@ export const adminKeys = {
   users: (params?: ListUsersParams) => ["admin", "users", params ?? {}] as const,
   pendingStores: (params?: { page?: number; limit?: number }) =>
     ["admin", "stores", "pending", params ?? {}] as const,
-  storeSearch: (q: string) => ["admin", "stores", "search", q] as const,
   allStores: (params?: ListAdminStoresParams) => ["admin", "stores", "all", params ?? {}] as const,
   store: (id: string) => ["admin", "stores", "detail", id] as const,
   orders: (params?: ListAdminOrdersParams) => ["admin", "orders", params ?? {}] as const,
@@ -104,14 +103,6 @@ export function usePendingStores(params?: { page?: number; limit?: number }) {
   return useQuery({
     queryKey: adminKeys.pendingStores(params),
     queryFn: () => adminApi.listPendingStores(params),
-  });
-}
-
-export function useApprovedStoreSearch(q: string) {
-  return useQuery({
-    queryKey: adminKeys.storeSearch(q),
-    queryFn: () => adminApi.searchApprovedStores(q),
-    enabled: q.trim().length > 0,
   });
 }
 
