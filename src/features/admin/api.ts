@@ -1,9 +1,16 @@
 import { apiClient } from "@/services/api-client";
-import type { AdminAnalyticsOverview, AdminUser, AuditLogEntry } from "@/types/admin";
+import type {
+  AdminAnalyticsOverview,
+  AdminCreatedStore,
+  AdminStore,
+  AdminUser,
+  AuditLogEntry,
+} from "@/types/admin";
+import type { CreateStorePayload } from "@/features/seller/api";
 import type { PaginatedResponse } from "@/types/api";
 import type { Category } from "@/types/category";
 import type { Order, OrderStatus } from "@/types/order";
-import type { Store } from "@/types/store";
+import type { Store, StoreApprovalStatus } from "@/types/store";
 
 export interface ListUsersParams {
   page?: number;
@@ -16,6 +23,27 @@ export interface ListAdminOrdersParams {
   limit?: number;
   status?: OrderStatus;
   storeId?: string;
+}
+
+export interface ListAdminStoresParams {
+  page?: number;
+  limit?: number;
+  /** Matches store name, city or seller email. */
+  search?: string;
+  approvalStatus?: StoreApprovalStatus;
+}
+
+/**
+ * A store an admin sets up for a seller: the seller's own store fields plus
+ * whose store it is. An existing seller gets it straight away; otherwise an
+ * account is created for `sellerEmail` and they're emailed to sign in with
+ * Google, after which they manage it like any store of their own.
+ */
+export interface AdminCreateStorePayload extends CreateStorePayload {
+  sellerEmail: string;
+  /** Only used when a new account is created. */
+  sellerName?: string;
+  sellerPhone?: string;
 }
 
 export interface ListAuditLogsParams {
@@ -68,6 +96,20 @@ export const adminApi = {
 
   suspendStore: (id: string) =>
     apiClient.patch<Store>(`/admin/stores/${id}/suspend`).then((r) => r.data),
+
+  listAllStores: (params?: ListAdminStoresParams) =>
+    apiClient.get<PaginatedResponse<AdminStore>>("/admin/stores", { params }).then((r) => r.data),
+
+  getStore: (id: string) => apiClient.get<AdminStore>(`/admin/stores/${id}`).then((r) => r.data),
+
+  /** Sets up a store for a seller by email — see `AdminCreateStorePayload`. */
+  createStore: (payload: AdminCreateStorePayload) =>
+    apiClient.post<AdminCreatedStore>("/admin/stores", payload).then((r) => r.data),
+
+  resendSellerInvite: (id: string) =>
+    apiClient
+      .post<{ sent: true; email: string }>(`/admin/stores/${id}/resend-invite`)
+      .then((r) => r.data),
 
   searchApprovedStores: (q: string, params?: { page?: number; limit?: number }) =>
     apiClient

@@ -1,12 +1,14 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import {
   adminApi,
+  type AdminCreateStorePayload,
   type CreateCategoryPayload,
   type ListAdminOrdersParams,
+  type ListAdminStoresParams,
   type ListAuditLogsParams,
   type ListUsersParams,
   type UpdateCategoryPayload,
@@ -27,6 +29,8 @@ export const adminKeys = {
   pendingStores: (params?: { page?: number; limit?: number }) =>
     ["admin", "stores", "pending", params ?? {}] as const,
   storeSearch: (q: string) => ["admin", "stores", "search", q] as const,
+  allStores: (params?: ListAdminStoresParams) => ["admin", "stores", "all", params ?? {}] as const,
+  store: (id: string) => ["admin", "stores", "detail", id] as const,
   orders: (params?: ListAdminOrdersParams) => ["admin", "orders", params ?? {}] as const,
   auditLogs: (params?: ListAuditLogsParams) => ["admin", "audit-logs", params ?? {}] as const,
 };
@@ -108,6 +112,55 @@ export function useApprovedStoreSearch(q: string) {
     queryKey: adminKeys.storeSearch(q),
     queryFn: () => adminApi.searchApprovedStores(q),
     enabled: q.trim().length > 0,
+  });
+}
+
+/** Every store, any approval status, with its seller. */
+export function useAdminStores(params?: ListAdminStoresParams) {
+  return useQuery({
+    queryKey: adminKeys.allStores(params),
+    queryFn: () => adminApi.listAllStores(params),
+    placeholderData: keepPreviousData,
+  });
+}
+
+/** One store with its seller, for the admin "manage store" header. */
+export function useAdminStore(id: string | undefined) {
+  return useQuery({
+    queryKey: adminKeys.store(id ?? ""),
+    queryFn: () => adminApi.getStore(id as string),
+    enabled: Boolean(id),
+  });
+}
+
+/**
+ * Sets up a store for a seller by email. The toast says what happened to the
+ * seller's account, since that's the part the admin can't see on the page.
+ */
+export function useAdminCreateStore() {
+  const invalidate = useInvalidateStores();
+  return useMutation({
+    mutationFn: (payload: AdminCreateStorePayload) => adminApi.createStore(payload),
+    onSuccess: (store) => {
+      invalidate();
+      const { email, invited, upgraded } = store.sellerAccount;
+      toast.success(`${store.name} created and approved.`, {
+        description: invited
+          ? `We emailed ${email} to sign in with Google — the store will be waiting in their seller dashboard.`
+          : upgraded
+            ? `${email} was a customer account and is now a seller. The store is in their seller dashboard.`
+            : `It's now in ${email}'s seller dashboard.`,
+      });
+    },
+    onError: (error) => toast.error(errorMessage(error, "Could not create this store.")),
+  });
+}
+
+export function useResendSellerInvite() {
+  return useMutation({
+    mutationFn: (storeId: string) => adminApi.resendSellerInvite(storeId),
+    onSuccess: ({ email }) => toast.success(`Sign-in email sent again to ${email}.`),
+    onError: (error) => toast.error(errorMessage(error, "Could not send the email.")),
   });
 }
 

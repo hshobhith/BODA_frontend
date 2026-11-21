@@ -1,5 +1,5 @@
 import type { OrderStatus } from "@/types/order";
-import type { StoreApprovalStatus, StoreType } from "@/types/store";
+import type { Store, StoreApprovalStatus, StoreType } from "@/types/store";
 
 /** Confirmed live against GET /admin/analytics/overview. */
 export interface AdminAnalyticsOverview {
@@ -47,4 +47,27 @@ export interface AuditLogEntry {
   metadata?: Record<string, unknown> | null;
   ipAddress?: string | null;
   createdAt: string;
+}
+
+/** `GET /admin/stores` row and `GET /admin/stores/:id` — a store with its owner. */
+export interface AdminStore extends Store {
+  seller: {
+    id: string;
+    fullName: string;
+    email: string;
+    /** False while a seller an admin set a store up for hasn't signed in yet. */
+    hasSignedIn: boolean;
+  } | null;
+}
+
+/** `POST /admin/stores` response. */
+export interface AdminCreatedStore extends Store {
+  sellerAccount: {
+    id: string;
+    email: string;
+    /** Account not claimed yet — the seller was emailed to sign in with Google. */
+    invited: boolean;
+    /** An existing customer account was turned into a seller account. */
+    upgraded: boolean;
+  };
 }

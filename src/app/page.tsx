@@ -229,7 +229,7 @@ export default function Home() {
               <Link href={ROUTES.stores}>Browse stores</Link>
             </Button>
             <Button asChild size="lg" variant="outline">
-              <Link href={ROUTES.sell}>Become a seller</Link>
+              <Link href={ROUTES.sell}>Create your free online store</Link>
             </Button>
           </div>
         </div>

@@ -46,6 +46,8 @@ interface ProductFormProps {
   /** Creating only: open the barcode camera straight away. */
   autoScan?: boolean;
   onSuccess?: (product: Product) => void;
+  /** Where links to another product's edit page go — the seller dashboard by default. */
+  editHref?: (productId: string) => string;
 }
 
 const NO_FOOD_TYPE = "unspecified";
@@ -71,6 +73,7 @@ export function ProductForm({
   product,
   autoScan = false,
   onSuccess,
+  editHref,
 }: ProductFormProps) {
   const isEditing = Boolean(product);
   const isRestaurant = storeType === "restaurant";
@@ -258,7 +261,12 @@ export function ProductForm({
     <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
       <FieldGroup>
         {!isEditing && (
-          <BarcodeLookupPanel storeId={storeId} autoScan={autoScan} onResult={applyBarcodeLookup} />
+          <BarcodeLookupPanel
+            storeId={storeId}
+            autoScan={autoScan}
+            onResult={applyBarcodeLookup}
+            editHref={editHref}
+          />
         )}
 
         <Field data-invalid={!!form.formState.errors.name}>

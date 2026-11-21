@@ -145,10 +145,12 @@ function InventoryHistoryDialog({
 
 interface ProductTableProps {
   storeId: string;
+  /** Where "Edit" goes — the seller dashboard by default; the admin console passes its own. */
+  editHref?: (productId: string) => string;
 }
 
 /** Seller's own product list — search, status/category filters, and per-row management actions. */
-export function ProductTable({ storeId }: ProductTableProps) {
+export function ProductTable({ storeId, editHref = ROUTES.sellerProductEdit }: ProductTableProps) {
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<string>(ALL_VALUE);
   const [categoryId, setCategoryId] = useState<string>(ALL_VALUE);
@@ -306,7 +308,7 @@ export function ProductTable({ storeId }: ProductTableProps) {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem asChild>
-                          <Link href={ROUTES.sellerProductEdit(product.id)}>Edit</Link>
+                          <Link href={editHref(product.id)}>Edit</Link>
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => setStockTarget(product)}>
                           Adjust stock

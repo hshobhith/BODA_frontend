@@ -18,6 +18,8 @@ interface BarcodeLookupPanelProps {
   autoScan?: boolean;
   /** Receives every lookup result, including "not found" (to fill in just the barcode). */
   onResult: (result: BarcodeLookupResult) => void;
+  /** Where the "edit that product" link goes — the seller dashboard by default. */
+  editHref?: (productId: string) => string;
 }
 
 /**
@@ -26,7 +28,12 @@ interface BarcodeLookupPanelProps {
  * USB/Bluetooth scanners type the code and press Enter, so Enter looks it up
  * here instead of submitting the product form.
  */
-export function BarcodeLookupPanel({ storeId, autoScan = false, onResult }: BarcodeLookupPanelProps) {
+export function BarcodeLookupPanel({
+  storeId,
+  autoScan = false,
+  onResult,
+  editHref = ROUTES.sellerProductEdit,
+}: BarcodeLookupPanelProps) {
   const [code, setCode] = useState("");
   const [scannerOpen, setScannerOpen] = useState(autoScan);
   const [result, setResult] = useState<BarcodeLookupResult | null>(null);
@@ -89,14 +96,20 @@ export function BarcodeLookupPanel({ storeId, autoScan = false, onResult }: Barc
         </div>
       </div>
 
-      {result && !lookup.isPending && <LookupMessage result={result} />}
+      {result && !lookup.isPending && <LookupMessage result={result} editHref={editHref} />}
 
       <BarcodeScannerDialog open={scannerOpen} onOpenChange={setScannerOpen} onDetected={runLookup} />
     </div>
   );
 }
 
-function LookupMessage({ result }: { result: BarcodeLookupResult }) {
+function LookupMessage({
+  result,
+  editHref,
+}: {
+  result: BarcodeLookupResult;
+  editHref: (productId: string) => string;
+}) {
   const found = result.suggestion !== null;
   const Icon = found ? CheckCircle2 : Info;
   return (
@@ -107,7 +120,7 @@ function LookupMessage({ result }: { result: BarcodeLookupResult }) {
           <span>
             You already sell this item as &quot;{result.existingProduct.name}&quot;.{" "}
             <Link
-              href={ROUTES.sellerProductEdit(result.existingProduct.id)}
+              href={editHref(result.existingProduct.id)}
               className="font-medium underline underline-offset-2"
             >
               Edit that product

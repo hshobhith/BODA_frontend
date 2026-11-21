@@ -74,6 +74,13 @@ export const ROUTES = {
   adminUsers: "/admin/users",
   adminSellers: "/admin/sellers",
   adminStores: "/admin/stores",
+  /** Admin sets up a store for a seller, by the seller's email. */
+  adminStoreNew: "/admin/stores/new",
+  /** Admin manages a store (details, hours, delivery, products) on its seller's behalf. */
+  adminStoreManage: (id: string) => `/admin/stores/${id}` as const,
+  adminStoreProductNew: (storeId: string) => `/admin/stores/${storeId}/products/new` as const,
+  adminStoreProductEdit: (storeId: string, productId: string) =>
+    `/admin/stores/${storeId}/products/${productId}/edit` as const,
   adminOrders: "/admin/orders",
   adminCategories: "/admin/categories",
   adminAuditLogs: "/admin/audit-logs",

@@ -40,7 +40,7 @@ const FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: "Sellers",
     links: [
-      { label: "Sell on BODA", href: ROUTES.sell },
+      { label: "Create a free online store", href: ROUTES.sell },
       { label: "Seller dashboard", href: ROUTES.sellerDashboard },
       { label: "Seller guide", href: ROUTES.sellerGuide },
       { label: "Fees & pricing", href: `${ROUTES.sell}#fees` },
